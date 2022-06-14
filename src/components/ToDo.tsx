@@ -1,7 +1,16 @@
-import React from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import { IToDo, toDoState } from "../atoms";
+import {
+  Area,
+  Card,
+  DeleteButton,
+  Form,
+  Title,
+  Wrapper,
+} from "../styles/components";
+import { handleSaveTodoInLocalStorage } from "../util";
 
 interface IBoardProps {
   boardId: string;
@@ -13,7 +22,7 @@ interface IForm {
 }
 
 function ToDo({ boardId, toDos }: IBoardProps) {
-  const setToDos = useSetRecoilState(toDoState);
+  const [boards, setBoards] = useRecoilState(toDoState);
   const { register, setValue, handleSubmit } = useForm<IForm>();
 
   const onValid = ({ toDo }: IForm) => {
@@ -22,7 +31,7 @@ function ToDo({ boardId, toDos }: IBoardProps) {
       text: toDo,
     };
 
-    setToDos((allBoards) => {
+    setBoards((allBoards) => {
       return {
         ...allBoards,
         [boardId]: [newToDo, ...allBoards[boardId]],
@@ -32,28 +41,41 @@ function ToDo({ boardId, toDos }: IBoardProps) {
     setValue("toDo", "");
   };
 
+  const onDelete = (toDo: IToDo) => {
+    const sourceBoard = boards[boardId];
+    const deletedTodos = sourceBoard.filter((row) => row.id !== toDo.id);
+
+    setBoards((allBoards) => {
+      return {
+        ...allBoards,
+        [boardId]: deletedTodos,
+      };
+    });
+  };
+
+  useEffect(() => {
+    handleSaveTodoInLocalStorage(boards);
+  }, [boards]);
+
   return (
-    <li>
-      <h1>{boardId}</h1>
-      {toDos.map((toDo, index) => (
-        <></>
-      ))}
-      {/* {category !== Categories.DOING && (
-        <button name={Categories.DOING} onClick={onClick}>
-          Doing
-        </button>
-      )}
-      {category !== Categories.TO_DO && (
-        <button name={Categories.TO_DO} onClick={onClick}>
-          To Do
-        </button>
-      )}
-      {category !== Categories.DONE && (
-        <button name={Categories.DONE} onClick={onClick}>
-          Done
-        </button>
-      )} */}
-    </li>
+    <Wrapper>
+      <Title>{boardId}</Title>
+      <Form onSubmit={handleSubmit(onValid)}>
+        <input
+          {...register("toDo", { required: true })}
+          type="text"
+          placeholder={`무엇을 하시겠습니까?`}
+        />
+      </Form>
+      <Area>
+        {toDos.map((toDo) => (
+          <Card key={toDo.id}>
+            {toDo.text}
+            <DeleteButton onClick={() => onDelete(toDo)}>❌</DeleteButton>
+          </Card>
+        ))}
+      </Area>
+    </Wrapper>
   );
 }
 
