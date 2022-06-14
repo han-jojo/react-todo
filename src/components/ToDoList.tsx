@@ -1,29 +1,44 @@
 import React, { useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { useRecoilState } from "recoil";
 import { toDoState } from "../atoms";
+import { Form } from "../styles/components";
 import ToDo from "./ToDo";
 
+interface IBoard {
+  boardName: string;
+}
+
 function ToDoList() {
-  const [toDos, setToDos] = useRecoilState(toDoState);
+  const [boards, setBoards] = useRecoilState(toDoState);
+  const { register, setValue, handleSubmit } = useForm<IBoard>();
 
-  // const onInput = (event: React.FormEvent<HTMLSelectElement>) => {
-  //   setCategory(event.currentTarget.value as any);
-  // };
+  const onValid = ({ boardName }: IBoard) => {
+    setBoards((allBoards) => {
+      return {
+        ...allBoards,
+        [boardName]: [],
+      };
+    });
 
-  useEffect(() => {
-    console.log(toDos);
-  }, [toDos]);
+    setValue("boardName", "");
+  };
 
   return (
     <div>
       <h1>To Dos</h1>
       <hr />
+      <Form onSubmit={handleSubmit(onValid)}>
+        <input
+          {...register("boardName", { required: true })}
+          type="text"
+          placeholder={`새로운 항목을 입력하세요.`}
+        />
+      </Form>
       {/* <CreateToDo /> */}
-      {
-        Object.keys(toDos).map((boardId => (
-          <ToDo key={boardId} boardId={boardId} toDos={toDos[boardId]} />
-        )))
-      }
+      {Object.keys(boards).map((boardId) => (
+        <ToDo key={boardId} boardId={boardId} toDos={boards[boardId]} />
+      ))}
     </div>
   );
 }
