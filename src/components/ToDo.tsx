@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useRecoilState } from "recoil";
-import { IToDo, toDoState } from "../atoms";
+import { IToDo, ITodoCategory, toDoState } from "../atoms";
 import {
   Area,
   Card,
+  DeleteBoardButton,
   DeleteButton,
   Form,
   Title,
@@ -53,6 +54,15 @@ function ToDo({ boardId, toDos }: IBoardProps) {
     });
   };
 
+  const onBoardDelete = (boardId: string) => {
+    setBoards((todos: ITodoCategory) => {
+      const copiedTodos: ITodoCategory = { ...todos };
+      delete copiedTodos[boardId];
+      const result: ITodoCategory = copiedTodos;
+      return result;
+    });
+  };
+
   useEffect(() => {
     handleSaveTodoInLocalStorage(boards);
   }, [boards]);
@@ -60,6 +70,9 @@ function ToDo({ boardId, toDos }: IBoardProps) {
   return (
     <Wrapper>
       <Title>{boardId}</Title>
+      <DeleteBoardButton onClick={() => onBoardDelete(boardId)}>
+        ✕
+      </DeleteBoardButton>
       <Form onSubmit={handleSubmit(onValid)}>
         <input
           {...register("toDo", { required: true })}
@@ -71,7 +84,7 @@ function ToDo({ boardId, toDos }: IBoardProps) {
         {toDos.map((toDo) => (
           <Card key={toDo.id}>
             {toDo.text}
-            <DeleteButton onClick={() => onDelete(toDo)}>❌</DeleteButton>
+            <DeleteButton onClick={() => onDelete(toDo)}>✕</DeleteButton>
           </Card>
         ))}
       </Area>

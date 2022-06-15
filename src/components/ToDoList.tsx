@@ -35,7 +35,6 @@ function ToDoList() {
     <div>
       <h1>J3y3h0's 투두리스트</h1>
       <hr />
-      
       <Form onSubmit={handleSubmit(onValid)}>
         <input
           {...register("boardName", { required: true })}

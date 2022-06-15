@@ -58,10 +58,24 @@ export const Card = styled.div`
   justify-content: space-around;
 `;
 
+export const DeleteBoardButton = styled.button`
+  top: 12px;
+  right: 10px;
+  width: 10%;
+  border: none;
+  outline: none;
+  align-self: end;
+  cursor: pointer;
+  background-color: #e74c3c;
+  color: white;
+  padding: 3px 5px;
+  border-radius: 50px;
+  font-size: 12px;
+`;
+
 export const DeleteButton = styled.button`
   border-radius: 35px;
-  background-color: #f1c40f;
-  &:hover{
-    background-color: #3498db;
-  }
+  border: none;
+  background-color: #e67e22;
+  cursor: pointer;
 `;
